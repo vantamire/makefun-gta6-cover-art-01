@@ -9,8 +9,13 @@ import { buildDossier } from './vendor/makefun-app.ts';
 const root = dirname(fileURLToPath(import.meta.url));
 const out = process.env.MAKEFUN_OUTPUT_DIR ?? '/output';
 
-rmSync(out, { recursive: true, force: true });
 mkdirSync(out, { recursive: true });
+// Clear only the known children inside the output directory, never the
+// directory itself: in the grader /output is a mounted volume, and deleting
+// the mount point fails (device busy) and aborts the run with exit 1.
+rmSync(join(out, 'app'), { recursive: true, force: true });
+rmSync(join(out, 'screenshots'), { recursive: true, force: true });
+rmSync(join(out, 'dossier.json'), { force: true });
 cpSync(join(root, 'app'), join(out, 'app'), { recursive: true });
 cpSync(join(root, 'screenshots'), join(out, 'screenshots'), { recursive: true });
 writeFileSync(
