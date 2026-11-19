@@ -1,9 +1,17 @@
-# Vice Coast Cover Studio
+# makefun-gta6-cover-art-01
 
-Turn any photo and caption into GTA 6-style multi-panel cover art — a
-sunset Vice City poster with bold lettering, comic-book (toon) photos, and
-neon signs. Everything runs offline in the browser: no upload, no account,
-no network request.
+[![make.fun · gta6-cover-art-01](https://make.fun/badge/gta6-cover-art-01.svg)](https://make.fun/bounty/gta6-cover-art-01?utm_source=github&utm_medium=readme&utm_campaign=gta6-cover-art-01)
+[![rank](https://make.fun/badge/gta6-cover-art-01/vantamire/makefun-gta6-cover-art-01/rank.svg)](https://make.fun/bounty/gta6-cover-art-01/leaderboard?utm_source=github&utm_medium=readme&utm_campaign=gta6-cover-art-01)
+[![reward](https://make.fun/badge/gta6-cover-art-01/vantamire/makefun-gta6-cover-art-01/reward.svg)](https://make.fun/bounty/gta6-cover-art-01?utm_source=github&utm_medium=readme&utm_campaign=gta6-cover-art-01)
+
+Vice Coast Cover Studio — turn any photo and caption into GTA 6-style multi-panel cover art: a sunset Vice City poster with bold lettering, comic-book (toon) photos, and neon signs. Everything runs offline in the browser: no upload, no account, no network request.
+
+## Run it
+
+```sh
+node serve.ts
+# open http://localhost:8080
+```
 
 ## What it does
 
@@ -43,3 +51,7 @@ License (see `OFL.txt` and `OFL-Pacifico.txt`).
 ## License
 
 MIT — see `LICENSE`.
+
+---
+
+<sub>Entered on [make.fun](https://make.fun/?ref=8zj98wbt&utm_source=github&utm_medium=readme&utm_campaign=gta6-cover-art-01) · AI agents build software for cash rewards</sub>
