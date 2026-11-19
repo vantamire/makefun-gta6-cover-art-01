@@ -1,73 +1,83 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Vice Coast Cover Studio — GTA-style cover art maker</title>
-<link rel="stylesheet" href="./style.css">
+<title>Vice Coast Cover Studio — GTA 6-style cover art maker</title>
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
 <header class="topbar">
-  <div class="brand"><span class="brand-mark">VC</span><div><strong>Vice Coast Cover Studio</strong><span>Turn any photo into GTA-style cover art — offline, on your machine</span></div></div>
+  <div class="brand">
+    <span class="brand-mark">VC</span>
+    <div>
+      <h1>Vice Coast Cover Studio</h1>
+      <p>Turn a photo and a caption into GTA 6-style multi-panel cover art.</p>
+    </div>
+  </div>
   <div class="top-actions">
-    <label class="size-label" for="exportSize">Export size</label>
-    <select id="exportSize">
-      <option value="1920x1080">1920 × 1080 · landscape</option>
-      <option value="1080x1080">1080 × 1080 · square</option>
-      <option value="1080x1350">1080 × 1350 · portrait</option>
-    </select>
-    <button id="export" type="button" class="btn-primary">⬇ Export PNG</button>
+    <button id="export-1080" class="btn primary" type="button">Export 1080 × 1080</button>
+    <button id="export-portrait" class="btn primary" type="button">Export 1080 × 1350</button>
+    <button id="export-wide" class="btn primary" type="button">Export 1920 × 1080</button>
   </div>
 </header>
-<main class="app">
-  <section class="controls" aria-label="Cover controls">
-    <h2>1 · Your photos</h2>
-    <p class="hint">Add up to 4 photos from your machine. They never leave it — and the Toon filter turns each one into comic art on the cover.</p>
-    <label class="upload">+ Add photos <input id="photos" type="file" accept="image/*" multiple></label>
-    <div id="photoSlots" class="photo-slots"></div>
-    <button id="fillAll" type="button" class="btn-ghost">Fill all panels with photo 1</button>
 
-    <h2>2 · Layout</h2>
-    <div class="btn-row" id="layoutRow">
-      <button type="button" data-layout="nine" class="btn-toggle">Varied mosaic</button>
-      <button type="button" data-layout="hero3" class="btn-toggle">Hero + 3 panels</button>
-      <button type="button" data-layout="tilted" class="btn-toggle active">Dynamic collage</button>
-      <button type="button" data-layout="full" class="btn-toggle">Full-bleed photo</button>
+<main class="workspace">
+  <aside class="panel controls" aria-label="Cover controls">
+    <section>
+      <h2>1 · Photos</h2>
+      <label class="file-btn" for="photo-input">Add photos (up to 4)</label>
+      <input id="photo-input" type="file" accept="image/*" multiple hidden>
+      <div id="photo-strip" class="photo-strip"></div>
+      <button id="fill-all" class="btn" type="button">Fill all panels with one photo</button>
+      <p class="hint">Click a panel on the cover to select it, then drag to pan and scroll to zoom. Crops anchor at the top so faces are never cut.</p>
+    </section>
+
+    <section>
+      <h2>2 · Layout</h2>
+      <div id="layout-row" class="chip-row" role="group" aria-label="Layout"></div>
+    </section>
+
+    <section>
+      <h2>3 · Caption</h2>
+      <label class="field">Title
+        <input id="title-input" type="text" value="VICE COAST" maxlength="24">
+      </label>
+      <label class="field">Subtitle
+        <input id="subtitle-input" type="text" value="chase the sunset" maxlength="40">
+      </label>
+    </section>
+
+    <section>
+      <h2>4 · Grade &amp; look</h2>
+      <div id="grade-row" class="chip-row" role="group" aria-label="Colour grade"></div>
+      <label class="check"><input id="toon-toggle" type="checkbox" checked> Toon filter (comic-book photos)</label>
+      <label class="check"><input id="grain-toggle" type="checkbox" checked> Film grain</label>
+      <label class="check"><input id="vignette-toggle" type="checkbox" checked> Vignette</label>
+    </section>
+
+    <section>
+      <h2>Selected panel</h2>
+      <p id="panel-info" class="hint">No panel selected — click one on the cover.</p>
+      <div class="row">
+        <button id="panel-photo" class="btn" type="button">Use photo</button>
+        <button id="panel-scene" class="btn" type="button">Use scene</button>
+      </div>
+    </section>
+  </aside>
+
+  <section class="stage-wrap">
+    <div class="stage-toolbar">
+      <span id="stage-label">Live preview</span>
+      <span id="stage-size"></span>
     </div>
-    <p class="hint">Panels sit tilted like photos on a table — angled, but never overlapping. The title is its own tilted panel in the middle, a little bigger than the rest.</p>
-
-    <h2>3 · Caption</h2>
-    <label class="field">Title <input id="title" type="text" maxlength="24" value="VICE COAST"></label>
-    <label class="field">Subtitle <input id="subtitle" type="text" maxlength="40" value="chase the sunset"></label>
-
-    <h2>4 · Colour grade</h2>
-    <div class="btn-row" id="gradeRow">
-      <button type="button" data-grade="sunset" class="btn-toggle active">Sunset</button>
-      <button type="button" data-grade="neon" class="btn-toggle">Neon Night</button>
-      <button type="button" data-grade="golden" class="btn-toggle">Golden Hour</button>
-      <button type="button" data-grade="teal" class="btn-toggle">Teal Pink</button>
-      <button type="button" data-grade="noir" class="btn-toggle">Mono Noir</button>
-    </div>
-
-    <h2>5 · Selected panel</h2>
-    <p class="hint" id="panelHint">Click a panel in the preview to select it, then drag it to pan.</p>
-    <label class="field">Zoom <input id="zoom" type="range" min="1" max="2.5" step="0.05" value="1"><span id="zoomVal">1.00×</span></label>
-    <label class="check"><input id="toon" type="checkbox" checked> Toon — photos become comic art</label>
-    <label class="check"><input id="grain" type="checkbox" checked> Film grain</label>
-    <label class="check"><input id="vignette" type="checkbox" checked> Vignette</label>
-    <label class="check"><input id="badge" type="checkbox" checked> Heat badge ribbon</label>
-    <p id="status" role="status"></p>
-  </section>
-
-  <section class="stage" aria-label="Live preview">
-    <div class="canvas-wrap">
-      <canvas id="preview" width="1280" height="720" aria-label="Live cover preview"></canvas>
-    </div>
-    <div id="panelStrip" class="panel-strip" aria-label="Panels"></div>
-    <p class="stage-note">Live preview — click any panel to crop &amp; position that photo. Export writes a full-size PNG.</p>
+    <canvas id="stage" width="1280" height="720"></canvas>
+    <p class="hint">Everything runs offline in your browser. Your photos never leave your machine. Original art only — no Rockstar logos, artwork or fonts.</p>
   </section>
 </main>
-<footer class="foot">Vice Coast Cover Studio · original art, Anton &amp; Pacifico fonts (SIL OFL) · no Rockstar logo, artwork or font · works fully offline</footer>
-<script type="module" src="./src/main.js"></script>
+
+<script src="src/cover.js"></script>
+<script src="src/main.js"></script>
+<script src="src/shots.js"></script>
 </body>
 </html>
