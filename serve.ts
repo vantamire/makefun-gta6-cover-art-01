@@ -1,73 +1,59 @@
-// A tiny static server for app/ (Node 22, standard library only), so an entry can be tried
-// locally without a build step: `node serve.ts` serves app/ on http://localhost:8080.
-// It sends the MIME types an offline web app needs, refuses any path outside app/, and otherwise
-// does nothing clever: this is a development convenience, not a web server for the internet.
-import { createReadStream, statSync } from 'node:fs';
+// Vice Coast Cover Studio — tiny static server for local use.
+// Serves app/ at the root. Usage: node serve.ts [--port 8080]
 import { createServer } from 'node:http';
-import { extname, join, normalize, resolve, sep } from 'node:path';
+import { readFile } from 'node:fs/promises';
+import { extname, join, normalize } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { dirname } from 'node:path';
 
-const root = resolve(fileURLToPath(new URL('./app', import.meta.url)));
-const args = process.argv.slice(2);
-const portIndex = args.indexOf('--port');
-const requested = portIndex === -1 ? 8080 : Number(args[portIndex + 1]);
-const port = Number.isInteger(requested) && requested > 0 && requested < 65536 ? requested : 8080;
+const root = join(dirname(fileURLToPath(import.meta.url)), 'app');
 
-const MIME: Record<string, string> = {
+const TYPES = {
   '.html': 'text/html; charset=utf-8',
+  '.css': 'text/css; charset=utf-8',
   '.js': 'text/javascript; charset=utf-8',
   '.mjs': 'text/javascript; charset=utf-8',
-  '.css': 'text/css; charset=utf-8',
   '.json': 'application/json; charset=utf-8',
-  '.png': 'image/png',
+  '.txt': 'text/plain; charset=utf-8',
   '.jpg': 'image/jpeg',
   '.jpeg': 'image/jpeg',
-  '.gif': 'image/gif',
-  '.webp': 'image/webp',
-  '.svg': 'image/svg+xml',
-  '.ico': 'image/x-icon',
-  '.woff2': 'font/woff2',
-  '.woff': 'font/woff',
+  '.png': 'image/png',
   '.ttf': 'font/ttf',
-  '.otf': 'font/otf',
-  '.bin': 'application/octet-stream',
-  '.wasm': 'application/wasm',
-  '.wav': 'audio/wav',
-  '.mp3': 'audio/mpeg',
-  '.ogg': 'audio/ogg',
-  '.txt': 'text/plain; charset=utf-8',
+  '.woff': 'font/woff',
+  '.woff2': 'font/woff2',
 };
 
-createServer((request, response) => {
-  const url = new URL(request.url ?? '/', 'http://localhost');
-  let pathname: string;
+function portFromArgs() {
+  var args = process.argv.slice(2);
+  for (var i = 0; i < args.length; i++) {
+    if (args[i] === '--port' && args[i + 1]) return parseInt(args[i + 1], 10);
+    var m = /^--port=(\d+)$/.exec(args[i]);
+    if (m) return parseInt(m[1], 10);
+  }
+  return 8080;
+}
+
+const port = portFromArgs();
+
+const server = createServer(async (req, res) => {
   try {
-    pathname = decodeURIComponent(url.pathname);
+    var path = decodeURIComponent(new URL(req.url, 'http://localhost').pathname);
+    if (path === '/') path = '/index.html';
+    var file = normalize(join(root, path));
+    if (!file.startsWith(root)) {
+      res.writeHead(403);
+      res.end('forbidden');
+      return;
+    }
+    var bytes = await readFile(file);
+    res.writeHead(200, { 'Content-Type': TYPES[extname(file).toLowerCase()] || 'application/octet-stream' });
+    res.end(bytes);
   } catch {
-    response.writeHead(400).end('bad request');
-    return;
+    res.writeHead(404);
+    res.end('not found');
   }
-  if (pathname.endsWith('/')) pathname += 'index.html';
-  const file = resolve(join(root, normalize(pathname)));
-  if (file !== root && !file.startsWith(root + sep)) {
-    response.writeHead(403).end('forbidden');
-    return;
-  }
-  let size: number;
-  try {
-    const stats = statSync(file);
-    if (!stats.isFile()) throw new Error('not a file');
-    size = stats.size;
-  } catch {
-    response.writeHead(404).end('not found');
-    return;
-  }
-  response.writeHead(200, {
-    'content-type': MIME[extname(file).toLowerCase()] ?? 'application/octet-stream',
-    'content-length': size,
-    'cache-control': 'no-store',
-  });
-  createReadStream(file).pipe(response);
-}).listen(port, '127.0.0.1', () => {
-  console.log(`app/ is on http://localhost:${port}`);
+});
+
+server.listen(port, () => {
+  console.log('Vice Coast Cover Studio at http://localhost:' + port);
 });

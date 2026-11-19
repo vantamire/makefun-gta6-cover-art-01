@@ -17,7 +17,7 @@ node serve.ts
 
 - **4 layouts** — Varied mosaic, Hero + 3 panels, Dynamic collage (tilted
   panels that never overlap), and Full-bleed photo.
-- **Up to 4 photos** — assign a photo per panel, drag to pan, zoom to crop.
+- **Up to 4 photos** — assign a photo per panel, drag to pan, scroll to zoom.
   The **Toon filter** (on by default) turns every photo into comic art:
   posterised colour, inked Sobel edges, cel shading. Faces are never
   cropped — the crop anchors at the top of the photo.
@@ -34,7 +34,7 @@ node serve.ts
    http://localhost:8080.
 2. Add your photos (or use the two sample photos already loaded).
 3. Pick a layout, type a title and subtitle, pick a grade.
-4. Click a panel to select it, drag to pan, zoom to crop.
+4. Click a panel to select it, drag to pan, scroll to zoom.
 5. Choose an export size and hit **Export PNG**.
 
 ## Export sizes
